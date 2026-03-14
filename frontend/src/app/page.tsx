@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import SearchBar from "@/components/SearchBar";
 import FilterBar from "@/components/FilterBar";
 import ResultCard from "@/components/ResultCard";
@@ -43,8 +44,17 @@ function SearchPage() {
   return (
     <div>
       <div className="mb-8 text-center">
+        <div className="mb-3 flex justify-center">
+          <Image
+            src="/images/finrag-logo.png"
+            alt="FinRAG"
+            width={72}
+            height={72}
+            className="rounded-xl"
+          />
+        </div>
         <h1 className="font-mono text-2xl font-bold tracking-tight">
-          <span className="text-accent">▲</span> multimodal financial search
+          finrag.io
         </h1>
         <p className="mt-1 text-sm text-muted">
           Semantic search across earnings calls, SEC filings, charts, and news

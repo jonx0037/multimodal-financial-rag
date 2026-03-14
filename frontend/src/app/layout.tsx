@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Multimodal Financial RAG",
+  title: "FinRAG",
   description: "Cross-modal semantic search over financial documents",
 };
 
@@ -30,9 +31,15 @@ export default function RootLayout({
       >
         <header className="flex items-center justify-between border-b border-card-border px-6 py-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-bold text-accent">▲</span>
+            <Image
+              src="/images/finrag-logo.png"
+              alt="FinRAG"
+              width={28}
+              height={28}
+              className="rounded-sm"
+            />
             <span className="font-mono text-sm font-semibold tracking-tight">
-              financial-rag
+              finrag.io
             </span>
           </div>
           <ThemeToggle />
