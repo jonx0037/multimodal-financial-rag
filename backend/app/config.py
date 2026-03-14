@@ -23,11 +23,11 @@ class Settings(BaseSettings):
             url = url.replace("postgres://", "postgresql+asyncpg://", 1)
         elif url.startswith("postgresql://"):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
-        # asyncpg doesn't accept sslmode — strip it (Fly internal traffic is unencrypted)
+        # asyncpg uses 'ssl' not 'sslmode' — replace for Fly internal traffic
         if "?sslmode=" in url:
-            url = url.split("?sslmode=")[0]
+            url = url.split("?sslmode=")[0] + "?ssl=disable"
         elif "&sslmode=" in url:
-            url = url.replace("&sslmode=disable", "")
+            url = url.replace("&sslmode=disable", "&ssl=disable")
         return url
 
     # Object Storage (S3/R2)

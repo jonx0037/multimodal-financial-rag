@@ -19,11 +19,11 @@ if database_url:
         database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
     elif database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
-    # asyncpg doesn't accept sslmode — strip it
+    # asyncpg uses 'ssl' not 'sslmode' — replace for Fly internal traffic
     if "?sslmode=" in database_url:
-        database_url = database_url.split("?sslmode=")[0]
+        database_url = database_url.split("?sslmode=")[0] + "?ssl=disable"
     elif "&sslmode=" in database_url:
-        database_url = database_url.replace("&sslmode=disable", "")
+        database_url = database_url.replace("&sslmode=disable", "&ssl=disable")
     config.set_main_option("sqlalchemy.url", database_url)
 
 if config.config_file_name is not None:
