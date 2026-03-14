@@ -47,6 +47,9 @@ async def lifespan(app: FastAPI):
         }
     )
 
+    # Create payload indexes for Qdrant Cloud filtered search
+    await vector_store.ensure_payload_indexes()
+
     # Create database tables
     await metadata_db.create_tables()
 

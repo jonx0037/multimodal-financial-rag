@@ -13,6 +13,7 @@ from qdrant_client.models import (
     FieldCondition,
     Filter,
     MatchValue,
+    PayloadSchemaType,
     PointStruct,
 )
 
@@ -35,6 +36,22 @@ class VectorStore:
             vectors_config=vectors_config,
         )
         logger.info("Created Qdrant collection '%s'", self.collection)
+
+    async def ensure_payload_indexes(self) -> None:
+        """Create payload indexes required for filtered search on Qdrant Cloud."""
+        indexes = {
+            "modality": PayloadSchemaType.KEYWORD,
+            "ticker": PayloadSchemaType.KEYWORD,
+            "source_type": PayloadSchemaType.KEYWORD,
+            "date": PayloadSchemaType.DATETIME,
+        }
+        for field, schema_type in indexes.items():
+            await self.client.create_payload_index(
+                collection_name=self.collection,
+                field_name=field,
+                field_schema=schema_type,
+            )
+        logger.info("Payload indexes ensured for collection '%s'", self.collection)
 
     async def upsert(
         self,
