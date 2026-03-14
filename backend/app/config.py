@@ -13,8 +13,17 @@ class Settings(BaseSettings):
     qdrant_url: str
     qdrant_api_key: str = ""
 
-    # PostgreSQL
-    database_url: str  # must use postgresql+asyncpg:// scheme
+    # PostgreSQL — Fly.io sets postgres://, we need postgresql+asyncpg://
+    database_url: str
+
+    @property
+    def async_database_url(self) -> str:
+        url = self.database_url
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://"):
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
 
     # Object Storage (S3/R2)
     s3_endpoint_url: str

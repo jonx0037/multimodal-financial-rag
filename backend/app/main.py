@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
         api_key=settings.qdrant_api_key,
         collection=COLLECTION_NAME,
     )
-    metadata_db = MetadataDB(database_url=settings.database_url)
+    metadata_db = MetadataDB(database_url=settings.async_database_url)
     object_store = ObjectStore(
         endpoint_url=settings.s3_endpoint_url,
         access_key_id=settings.s3_access_key_id,

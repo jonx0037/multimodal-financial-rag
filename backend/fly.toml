@@ -1,4 +1,4 @@
-app = "multimodal-rag-api"
+app = "multimodal-financial-rag"
 primary_region = "iad"
 
 [build]
