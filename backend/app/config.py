@@ -1,0 +1,32 @@
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    # Gemini API
+    gemini_api_key: str
+
+    # Qdrant Cloud
+    qdrant_url: str
+    qdrant_api_key: str = ""
+
+    # PostgreSQL
+    database_url: str  # must use postgresql+asyncpg:// scheme
+
+    # Object Storage (S3/R2)
+    s3_endpoint_url: str
+    s3_access_key_id: str
+    s3_secret_access_key: str
+    s3_bucket_name: str = "financial-docs"
+
+    # App — use JSON array format in .env: ["http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:3000"]
+    log_level: str = "INFO"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()

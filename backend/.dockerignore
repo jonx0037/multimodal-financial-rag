@@ -1,0 +1,10 @@
+.venv
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.production.example
+tests/
+scripts/
+docker-compose.yml
+.ruff_cache
