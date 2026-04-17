@@ -11,9 +11,7 @@ from app.api.ingest import router as ingest_router
 from app.api.search import router as search_router
 from app.config import get_settings
 from app.services.embedding import EmbeddingService
-from app.services.explainability import ExplainabilityService
 from app.services.metadata import MetadataDB
-from app.services.sentiment import SentimentService
 from app.services.storage import ObjectStore
 from app.services.vector_store import VectorStore
 
@@ -56,17 +54,27 @@ async def lifespan(app: FastAPI):
     # Create database tables
     await metadata_db.create_tables()
 
-    # Initialize explainability services
-    sentiment_service = SentimentService()
-    explainability_service = ExplainabilityService(sentiment_service)
-
     # Attach services to app state
     app.state.embedding_service = embedding_service
     app.state.vector_store = vector_store
     app.state.metadata_db = metadata_db
     app.state.object_store = object_store
-    app.state.sentiment_service = sentiment_service
-    app.state.explainability_service = explainability_service
+
+    # Explainability services (FinBERT + SHAP) require ~1GB RAM
+    # Disabled by default on memory-constrained deployments (Fly.io 512MB)
+    if settings.enable_explainability:
+        from app.services.explainability import ExplainabilityService
+        from app.services.sentiment import SentimentService
+
+        sentiment_service = SentimentService()
+        explainability_service = ExplainabilityService(sentiment_service)
+        app.state.sentiment_service = sentiment_service
+        app.state.explainability_service = explainability_service
+        logger.info("Explainability services loaded (FinBERT + SHAP)")
+    else:
+        app.state.sentiment_service = None
+        app.state.explainability_service = None
+        logger.info("Explainability services disabled (set ENABLE_EXPLAINABILITY=true to enable)")
 
     logger.info("All services initialized successfully")
     yield
