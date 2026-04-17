@@ -8,8 +8,6 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.models.schemas import HealthResponse
-
 
 @pytest.fixture
 def mock_embedding_service():
@@ -84,11 +82,46 @@ def mock_metadata_db():
 def mock_object_store():
     """Mock ObjectStore."""
     store = MagicMock()
-    store.upload_file = AsyncMock(side_effect=lambda *args, **kw: args[1] if len(args) > 1 else kw.get("key", "unknown"))
+    store.upload_file = AsyncMock(
+        side_effect=lambda *args, **kw: args[1] if len(args) > 1 else kw.get("key", "unknown")
+    )
     store.generate_presigned_url = AsyncMock(
         side_effect=lambda key, **kw: f"https://storage.example.com/{key}?signed=true"
     )
     return store
+
+
+@pytest.fixture
+def mock_sentiment_service():
+    """Mock SentimentService."""
+    service = MagicMock()
+    service.predict = MagicMock(return_value={
+        "label": "positive",
+        "confidence": 0.94,
+        "probabilities": {"positive": 0.94, "negative": 0.03, "neutral": 0.03},
+    })
+    return service
+
+
+@pytest.fixture
+def mock_explainability_service():
+    """Mock ExplainabilityService."""
+    service = MagicMock()
+    service.explain_sentiment = MagicMock(return_value={
+        "label": "positive",
+        "confidence": 0.94,
+        "probabilities": {"positive": 0.94, "negative": 0.03, "neutral": 0.03},
+        "shap_values": [{"token": "record", "value": 0.18}],
+        "base_value": 0.33,
+    })
+    service.explain_retrieval_result = MagicMock(return_value={
+        "id": "abc123",
+        "score": 0.87,
+        "query_terms_contribution": [{"term": "earnings", "weight": 0.42}],
+        "modality": "text",
+        "similarity_method": "cosine on 3072-dim full vector",
+    })
+    return service
 
 
 @pytest.fixture
@@ -97,22 +130,29 @@ async def app_client(
     mock_vector_store,
     mock_metadata_db,
     mock_object_store,
+    mock_sentiment_service,
+    mock_explainability_service,
 ):
     """FastAPI test client with mocked services."""
     from fastapi import FastAPI
+
+    from app.api.explain import router as explain_router
     from app.api.health import router as health_router
-    from app.api.search import router as search_router
     from app.api.ingest import router as ingest_router
+    from app.api.search import router as search_router
 
     app = FastAPI()
     app.include_router(health_router)
     app.include_router(search_router)
     app.include_router(ingest_router)
+    app.include_router(explain_router)
 
     app.state.embedding_service = mock_embedding_service
     app.state.vector_store = mock_vector_store
     app.state.metadata_db = mock_metadata_db
     app.state.object_store = mock_object_store
+    app.state.sentiment_service = mock_sentiment_service
+    app.state.explainability_service = mock_explainability_service
 
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"

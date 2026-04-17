@@ -1,6 +1,7 @@
 """
-Ingestion pipeline: orchestrates file upload → chunking → embedding → vector upsert → metadata write.
-Each modality has its own chunking strategy and embedding flow.
+Ingestion pipeline: orchestrates file upload, chunking, embedding,
+vector upsert, and metadata write. Each modality has its own chunking
+strategy and embedding flow.
 """
 
 import logging

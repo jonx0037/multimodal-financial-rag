@@ -43,3 +43,42 @@ export const MODALITY_COLORS_LIGHT: Record<Modality, string> = {
   pdf: "bg-rose-100 text-rose-700 border-rose-200",
   image: "bg-amber-100 text-amber-700 border-amber-200",
 };
+
+// --- Explainability types ---
+
+export interface ShapToken {
+  token: string;
+  value: number;
+}
+
+export interface SentimentExplainResponse {
+  label: string;
+  confidence: number;
+  probabilities: Record<string, number>;
+  shap_values: ShapToken[];
+  base_value: number;
+}
+
+export interface QueryTermContribution {
+  term: string;
+  weight: number;
+}
+
+export interface ResultExplanation {
+  id: string;
+  score: number;
+  query_terms_contribution: QueryTermContribution[];
+  modality: string;
+  similarity_method: string;
+}
+
+export interface RetrievalExplainResponse {
+  results: ResultExplanation[];
+}
+
+export interface PipelineStage {
+  step: number;
+  name: string;
+  description: string;
+  details?: Record<string, unknown>;
+}
