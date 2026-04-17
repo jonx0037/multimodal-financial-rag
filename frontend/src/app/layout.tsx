@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Image from "next/image";
+import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -42,7 +43,15 @@ export default function RootLayout({
               finrag.io
             </span>
           </div>
-          <ThemeToggle />
+          <nav className="flex items-center gap-4">
+            <Link
+              href="/learn"
+              className="font-mono text-xs text-muted hover:text-foreground transition-colors"
+            >
+              Learn
+            </Link>
+            <ThemeToggle />
+          </nav>
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
       </body>
