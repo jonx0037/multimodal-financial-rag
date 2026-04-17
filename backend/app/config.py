@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     # App — use JSON array format in .env: ["http://localhost:3000"]
     cors_origins: list[str] = ["http://localhost:3000"]
     log_level: str = "INFO"
-    enable_explainability: bool = False
+    enable_explainability: bool = True
 
 
 @lru_cache
