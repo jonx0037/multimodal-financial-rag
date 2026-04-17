@@ -50,17 +50,20 @@ export default function ExplainPanel({
         explainRetrieval(query, [resultId]),
       ]);
 
-      if (results[0].status === "fulfilled" && results[0].value) {
-        setSentiment(results[0].value);
-      }
+      const sentimentData =
+        results[0].status === "fulfilled" ? results[0].value : null;
+
+      let retrievalMatch: ResultExplanation | null = null;
       if (results[1].status === "fulfilled") {
         const retrievalData = results[1].value;
-        const match = retrievalData.results.find((r) => r.id === resultId);
-        if (match) setRetrieval(match);
+        retrievalMatch =
+          retrievalData.results.find((r) => r.id === resultId) ?? null;
       }
 
-      const allFailed = results.every((r) => r.status === "rejected");
-      if (allFailed) {
+      if (sentimentData) setSentiment(sentimentData);
+      if (retrievalMatch) setRetrieval(retrievalMatch);
+
+      if (!sentimentData && !retrievalMatch) {
         setError("Explanation unavailable");
       }
     } catch {

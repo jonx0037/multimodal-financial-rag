@@ -111,9 +111,15 @@ async def explain_retrieval(req: RetrievalExplainRequest, request: Request):
     vector_store = request.app.state.vector_store
     explainability = request.app.state.explainability_service
 
+    # Embed the full query
     query_vector = await embedding_service.embed_query(req.query)
-    query_terms = req.query.strip().split()
 
+    # Embed each query term individually for per-term attribution
+    query_terms = req.query.strip().split()
+    term_embeddings = await embedding_service.embed_text(query_terms)
+    term_vectors = dict(zip(query_terms, term_embeddings))
+
+    # Retrieve the stored vectors for requested results
     points = await vector_store.client.retrieve(
         collection_name=vector_store.collection,
         ids=req.result_ids,
@@ -123,17 +129,22 @@ async def explain_retrieval(req: RetrievalExplainRequest, request: Request):
 
     results = []
     for point in points:
-        result_vector = point.vector.get("full", point.vector.get("compact", []))
+        # Prefer full vector; track which one we actually used
+        if "full" in point.vector and point.vector["full"]:
+            result_vector = point.vector["full"]
+            used_compact = False
+        else:
+            result_vector = point.vector.get("compact", [])
+            used_compact = True
         modality = point.payload.get("modality", "unknown")
 
         explanation = explainability.explain_retrieval_result(
-            query_terms=query_terms,
             query_vector=query_vector,
             result_vector=result_vector,
             result_id=str(point.id),
-            score=0.0,
             modality=modality,
-            use_compact="compact" in point.vector,
+            term_vectors=term_vectors,
+            use_compact=used_compact,
         )
         results.append(
             ResultExplanation(

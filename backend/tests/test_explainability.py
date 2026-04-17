@@ -47,25 +47,43 @@ def test_explain_sentiment_empty_raises(explainability_service):
         explainability_service.explain_sentiment("")
 
 
-def test_explain_retrieval_returns_contributions():
-    """Test retrieval explanation with mock vectors."""
+def test_explain_retrieval_computes_cosine_similarity():
+    """Test retrieval explanation computes actual cosine similarity."""
     service = ExplainabilityService.__new__(ExplainabilityService)
 
-    query_terms = ["earnings", "growth"]
-    query_vector = [0.5, 0.3, 0.8, 0.1]
-    result_vector = [0.4, 0.2, 0.9, 0.0]
-    score = 0.87
+    query_vector = [1.0, 0.0, 0.0, 0.0]
+    result_vector = [1.0, 0.0, 0.0, 0.0]
 
     explanation = service.explain_retrieval_result(
-        query_terms=query_terms,
         query_vector=query_vector,
         result_vector=result_vector,
         result_id="abc123",
-        score=score,
         modality="text",
         use_compact=False,
     )
     assert explanation["id"] == "abc123"
-    assert explanation["score"] == 0.87
-    assert len(explanation["query_terms_contribution"]) == 2
+    assert explanation["score"] == 1.0  # identical vectors = perfect similarity
     assert explanation["similarity_method"] == "cosine on 3072-dim full vector"
+
+
+def test_explain_retrieval_with_term_vectors():
+    """Test retrieval explanation with per-term cosine similarity."""
+    service = ExplainabilityService.__new__(ExplainabilityService)
+
+    result_vector = [0.5, 0.3, 0.8, 0.1]
+    term_vectors = {
+        "earnings": [0.9, 0.1, 0.0, 0.0],  # aligned on dim 0
+        "growth": [0.0, 0.0, 0.9, 0.1],  # aligned on dim 2
+    }
+
+    explanation = service.explain_retrieval_result(
+        query_vector=[0.5, 0.3, 0.8, 0.1],
+        result_vector=result_vector,
+        result_id="abc123",
+        modality="text",
+        term_vectors=term_vectors,
+    )
+    assert len(explanation["query_terms_contribution"]) == 2
+    # "growth" should have higher weight (more aligned with result on dim 2)
+    weights = {c["term"]: c["weight"] for c in explanation["query_terms_contribution"]}
+    assert weights["growth"] > weights["earnings"]
