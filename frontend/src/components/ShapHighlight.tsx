@@ -1,14 +1,21 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import type { ShapToken } from "@/lib/types";
 
-function tokenColor(value: number, maxAbsValue: number): string {
-  if (maxAbsValue === 0) return "bg-transparent";
+function tokenStyle(value: number, maxAbsValue: number): CSSProperties {
+  if (maxAbsValue === 0) return {};
   const intensity = Math.min(Math.abs(value) / maxAbsValue, 1);
-  const alpha = Math.round(intensity * 40 + 5); // 5-45% opacity
-  if (value > 0) return `bg-shap-positive/${alpha}`;
-  if (value < 0) return `bg-shap-negative/${alpha}`;
-  return "bg-transparent";
+  const alpha = intensity * 0.4 + 0.05; // 5-45% opacity
+  const cssVar =
+    value > 0
+      ? "var(--shap-positive)"
+      : value < 0
+        ? "var(--shap-negative)"
+        : "transparent";
+  return {
+    backgroundColor: `color-mix(in srgb, ${cssVar} ${Math.round(alpha * 100)}%, transparent)`,
+  };
 }
 
 export default function ShapHighlight({ tokens }: { tokens: ShapToken[] }) {
@@ -19,7 +26,8 @@ export default function ShapHighlight({ tokens }: { tokens: ShapToken[] }) {
       {tokens.map((token, i) => (
         <span
           key={i}
-          className={`inline-block rounded px-0.5 font-mono text-xs ${tokenColor(token.value, maxAbsValue)}`}
+          className="inline-block rounded px-0.5 font-mono text-xs"
+          style={tokenStyle(token.value, maxAbsValue)}
           title={`${token.token}: ${token.value > 0 ? "+" : ""}${token.value.toFixed(4)}`}
         >
           {token.token}

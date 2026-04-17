@@ -2,7 +2,7 @@
 Pydantic request/response models for the API layer.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SearchRequest(BaseModel):
@@ -44,7 +44,7 @@ class ShapToken(BaseModel):
 
 
 class SentimentExplainRequest(BaseModel):
-    text: str
+    text: str = Field(..., max_length=2000)
 
 
 class SentimentExplainResponse(BaseModel):
@@ -70,7 +70,7 @@ class ResultExplanation(BaseModel):
 
 class RetrievalExplainRequest(BaseModel):
     query: str
-    result_ids: list[str]
+    result_ids: list[str] = Field(..., max_length=50)
 
 
 class RetrievalExplainResponse(BaseModel):
