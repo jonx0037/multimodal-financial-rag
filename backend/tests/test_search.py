@@ -4,7 +4,9 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_search_returns_results(app_client, mock_embedding_service, mock_vector_store, mock_object_store):
+async def test_search_returns_results(
+    app_client, mock_embedding_service, mock_vector_store, mock_object_store
+):
     response = await app_client.post("/api/search/", json={
         "query": "bearish signals from Q4 tech earnings",
         "limit": 10,

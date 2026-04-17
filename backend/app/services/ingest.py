@@ -1,7 +1,7 @@
 """
 Ingestion pipeline: orchestrates file upload → chunking → embedding → vector upsert → metadata write.
 Each modality has its own chunking strategy and embedding flow.
-"""
+"""  # noqa: E501
 
 import logging
 import tempfile
