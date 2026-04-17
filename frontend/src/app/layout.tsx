@@ -31,7 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header className="flex items-center justify-between border-b border-card-border px-6 py-3">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/images/finrag-logo.png"
               alt="FinRAG"
@@ -42,7 +42,7 @@ export default function RootLayout({
             <span className="font-mono text-sm font-semibold tracking-tight">
               finrag.io
             </span>
-          </div>
+          </Link>
           <nav className="flex items-center gap-4">
             <Link
               href="/learn"
