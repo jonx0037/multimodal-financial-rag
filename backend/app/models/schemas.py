@@ -36,3 +36,49 @@ class HealthResponse(BaseModel):
     version: str
     qdrant_connected: bool = False
     postgres_connected: bool = False
+
+
+class ShapToken(BaseModel):
+    token: str
+    value: float
+
+
+class SentimentExplainRequest(BaseModel):
+    text: str
+
+
+class SentimentExplainResponse(BaseModel):
+    label: str
+    confidence: float
+    probabilities: dict[str, float]
+    shap_values: list[ShapToken]
+    base_value: float
+
+
+class QueryTermContribution(BaseModel):
+    term: str
+    weight: float
+
+
+class ResultExplanation(BaseModel):
+    id: str
+    score: float
+    query_terms_contribution: list[QueryTermContribution]
+    modality: str
+    similarity_method: str
+
+
+class RetrievalExplainRequest(BaseModel):
+    query: str
+    result_ids: list[str]
+
+
+class RetrievalExplainResponse(BaseModel):
+    results: list[ResultExplanation]
+
+
+class PipelineStage(BaseModel):
+    step: int
+    name: str
+    description: str
+    details: dict | None = None
