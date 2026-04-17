@@ -2,8 +2,8 @@
 
 import pytest
 
-from app.services.sentiment import SentimentService
 from app.services.explainability import ExplainabilityService
+from app.services.sentiment import SentimentService
 
 
 @pytest.fixture(scope="module")

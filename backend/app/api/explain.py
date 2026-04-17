@@ -9,10 +9,10 @@ from fastapi import APIRouter, HTTPException, Request
 
 from app.models.schemas import (
     PipelineStage,
+    QueryTermContribution,
+    ResultExplanation,
     RetrievalExplainRequest,
     RetrievalExplainResponse,
-    ResultExplanation,
-    QueryTermContribution,
     SentimentExplainRequest,
     SentimentExplainResponse,
     ShapToken,

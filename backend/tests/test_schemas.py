@@ -1,14 +1,14 @@
 """Tests for explainability Pydantic schemas."""
 
 from app.models.schemas import (
-    SentimentExplainRequest,
-    SentimentExplainResponse,
-    RetrievalExplainRequest,
-    RetrievalExplainResponse,
-    ShapToken,
+    PipelineStage,
     QueryTermContribution,
     ResultExplanation,
-    PipelineStage,
+    RetrievalExplainRequest,
+    RetrievalExplainResponse,
+    SentimentExplainRequest,
+    SentimentExplainResponse,
+    ShapToken,
 )
 
 
