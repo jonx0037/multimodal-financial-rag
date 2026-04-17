@@ -36,7 +36,7 @@ export default function PipelineBar() {
         className="flex w-full items-center justify-between px-4 py-2 font-mono text-xs text-muted hover:text-foreground transition-colors"
       >
         <span>&#9881; See how this search works</span>
-        <span className="text-[10px]">{open ? "&#9650;" : "&#9660;"}</span>
+        <span className="text-[10px]">{open ? "\u25B2" : "\u25BC"}</span>
       </button>
 
       {open && stages.length > 0 && (
