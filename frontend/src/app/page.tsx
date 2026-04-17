@@ -8,6 +8,7 @@ import FilterBar from "@/components/FilterBar";
 import ResultCard from "@/components/ResultCard";
 import { useSearch } from "@/hooks/useSearch";
 import { MODALITIES, type Modality } from "@/lib/types";
+import PipelineBar from "@/components/PipelineBar";
 
 function SearchPage() {
   const router = useRouter();
@@ -84,8 +85,9 @@ function SearchPage() {
         }
       />
 
-      {/* Results */}
+      {/* Pipeline + Results */}
       <div className="mt-6">
+        {hasSearched && !loading && results.length > 0 && <PipelineBar />}
         {error && (
           <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 font-mono text-sm text-red-400">
             {error}
