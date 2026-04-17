@@ -6,8 +6,13 @@ Uses the SHAP Partition explainer with FinBERT for token-level attributions.
 import logging
 
 import numpy as np
-import shap
-import torch
+
+try:
+    import shap
+    import torch
+except ImportError:
+    shap = None  # type: ignore[assignment]
+    torch = None  # type: ignore[assignment]
 
 from app.services.sentiment import LABELS, SentimentService
 
