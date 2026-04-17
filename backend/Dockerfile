@@ -11,7 +11,7 @@ WORKDIR /app
 
 # Install dependencies first (layer caching)
 COPY pyproject.toml .
-RUN uv pip install --system -e .
+RUN uv pip install --system -e . --no-cache
 
 # Copy application code
 COPY app/ app/
