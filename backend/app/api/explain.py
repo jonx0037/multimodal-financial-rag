@@ -89,6 +89,8 @@ PIPELINE_STAGES = [
 async def explain_sentiment(req: SentimentExplainRequest, request: Request):
     """Compute SHAP token attributions for FinBERT sentiment prediction."""
     explainability = request.app.state.explainability_service
+    if explainability is None:
+        raise HTTPException(status_code=503, detail="Explainability services not enabled")
 
     try:
         result = await asyncio.to_thread(explainability.explain_sentiment, req.text)
@@ -107,9 +109,12 @@ async def explain_sentiment(req: SentimentExplainRequest, request: Request):
 @router.post("/retrieval", response_model=RetrievalExplainResponse)
 async def explain_retrieval(req: RetrievalExplainRequest, request: Request):
     """Explain why specific results matched the query."""
+    explainability = request.app.state.explainability_service
+    if explainability is None:
+        raise HTTPException(status_code=503, detail="Explainability services not enabled")
+
     embedding_service = request.app.state.embedding_service
     vector_store = request.app.state.vector_store
-    explainability = request.app.state.explainability_service
 
     # Embed the full query
     query_vector = await embedding_service.embed_query(req.query)
