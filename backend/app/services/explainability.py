@@ -23,10 +23,12 @@ class ExplainabilityService:
     def __init__(self, sentiment_service: SentimentService):
         self.sentiment_service = sentiment_service
 
-        # Build a SHAP-compatible prediction function (batched for performance)
-        def predict_fn(texts: list[str]) -> np.ndarray:
+        # SHAP passes inputs as numpy arrays; HuggingFace tokenizer requires
+        # a plain list[str], so we coerce before forwarding to the model.
+        def predict_fn(texts) -> np.ndarray:
+            texts_list = [str(t) for t in texts]
             inputs = sentiment_service.tokenizer(
-                texts, return_tensors="pt", padding=True, truncation=True, max_length=512
+                texts_list, return_tensors="pt", padding=True, truncation=True, max_length=512
             )
             with torch.no_grad():
                 outputs = sentiment_service.model(**inputs)
